@@ -1,12 +1,9 @@
 import fastify from 'fastify';
-import { request } from 'http';
+import { tasksRoutes } from './routes/tasks';
 
 const server = fastify();
 
-server.get('/', async (request, reply) => {
-  return 'Is alive 🧟‍♂️ ';
-});
-
+server.register(tasksRoutes)
 
 server.listen({ port: 3333 }, (err) => {
   if (err) {
