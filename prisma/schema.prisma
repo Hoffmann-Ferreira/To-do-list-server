@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String @id @unique @default(uuid())
+  googleId  String @unique
+  name      String
+  email     String
+  senha     String
+  avatarUrl String
+
+  tasks Task[]
+}
+
+model Task {
+  id        String   @id @unique @default(uuid())
+  concluded Boolean  @default(false)
+  name      String
+  date      DateTime
+  task      String
+  createdAt DateTime
+  userId    String
+  taskId    String?
+
+  subTask Task?  @relation("ChildrenTask", fields: [taskId], references: [id])
+  sub     Task[] @relation("ChildrenTask")
+  user    User   @relation(fields: [userId], references: [id])
+}
