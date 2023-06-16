@@ -24,7 +24,7 @@ model Task {
   name      String
   date      DateTime
   task      String
-  createdAt DateTime
+  createdAt DateTime @default(now())
   userId    String
   taskId    String?
 
