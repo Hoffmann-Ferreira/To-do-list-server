@@ -24,7 +24,39 @@ export async function tasksRoutes(server: FastifyInstance) {
     return createdTask;
   });
 
-  server.get('/tasks', async (request, reply) => {
-    return 'Hello world';
+  server.patch('/edit-task/:id', async (request) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    });
+
+    const { id } = paramsSchema.parse(request.params);
+
+    const bodySchema = z.object({
+      name: z.string(),
+      date: z.string(),
+      task: z.string(),
+    });
+
+    const { name, date, task } = bodySchema.parse(request.body);
+
+    // let findTask = await prisma.task.findUniqueOrThrow({
+    //   where: { id,
+    //   },
+    // })
+
+    const editTask = await prisma.task.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        date,
+        task,
+      },
+    });
+
+    return editTask;
   });
+
+  
 }
