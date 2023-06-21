@@ -21,14 +21,14 @@ model User {
 model Task {
   id        String   @id @unique @default(uuid())
   concluded Boolean  @default(false)
-  name      String
-  date      DateTime
-  task      String
+  name      String? 
+  date      DateTime?
+  task      String?
   createdAt DateTime @default(now())
   userId    String
   taskId    String?
 
   subTask Task?  @relation("ChildrenTask", fields: [taskId], references: [id])
   sub     Task[] @relation("ChildrenTask")
-  user    User   @relation(fields: [userId], references: [id])
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

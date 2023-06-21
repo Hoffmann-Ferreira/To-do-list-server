@@ -32,9 +32,9 @@ export async function tasksRoutes(server: FastifyInstance) {
     const { id } = paramsSchema.parse(request.params);
 
     const bodySchema = z.object({
-      name: z.string(),
-      date: z.string(),
-      task: z.string(),
+      name: z.string().optional(),
+      date: z.string().optional(),
+      task: z.string().optional(),
     });
 
     const { name, date, task } = bodySchema.parse(request.body);
@@ -60,9 +60,9 @@ export async function tasksRoutes(server: FastifyInstance) {
     const { id } = paramsSchema.parse(request.params);
 
     const bodySchema = z.object({
-      name: z.string(),
-      date: z.string(),
-      task: z.string(),
+      name: z.string().optional(),
+      date: z.string().optional(),
+      task: z.string().optional(),
     });
 
     const { name, date, task } = bodySchema.parse(request.body);
