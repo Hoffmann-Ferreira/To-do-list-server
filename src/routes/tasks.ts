@@ -113,6 +113,7 @@ export async function tasksRoutes(server: FastifyInstance) {
       where: {
         id: id,
       },
+      include: { sub: true },
     });
 
     return tasks;

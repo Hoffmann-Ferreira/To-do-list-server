@@ -11,21 +11,43 @@ export async function userRoutes(server: FastifyInstance) {
     });
 
     const { name, email, senha } = bodySchema.parse(request.body);
-    console.log("cheguei", name, email, senha)
+    console.log('cheguei', name, email, senha);
 
     const createUser = await prisma.user.create({
       data: {
         name,
         email,
         senha,
-        googleId: "1",
-        avatarUrl: "le"
       },
     });
 
-    const token = server.jwt.sign ({ name: createUser.name });
+    const token = server.jwt.sign(
+      { name: createUser.name },
+      {
+        expiresIn: '30 days',
+      }
+    );
     console.log(token);
 
     return createUser;
+  });
+
+  server.get('/user/:id', async (request) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    });
+
+    const { id } = paramsSchema.parse(request.params);
+
+    const user = await prisma.user.findFirstOrThrow({
+      where: {
+        id: id,
+      },
+      include: {
+        tasks: true,
+      },
+    });
+
+    return user;
   });
 }
