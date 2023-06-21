@@ -12,6 +12,7 @@
   "author": "Andrei Hoffmann Ferreira",
   "license": "ISC",
   "dependencies": {
+    "@fastify/jwt": "^7.0.0",
     "@prisma/client": "^4.16.0",
     "@types/uuid": "^9.0.2",
     "fastify": "^4.18.0",

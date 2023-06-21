@@ -1,9 +1,16 @@
 import fastify from 'fastify';
 import { tasksRoutes } from './routes/tasks';
+import { userRoutes } from './routes/user';
+import jwt from '@fastify/jwt';
 
 const server = fastify();
 
-server.register(tasksRoutes)
+server.register(jwt, {
+  secret: 'To-to-list',
+});
+
+server.register(tasksRoutes);
+server.register(userRoutes);
 
 server.listen({ port: 3333 }, (err) => {
   if (err) {
