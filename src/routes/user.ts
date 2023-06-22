@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma';
-import { z } from 'zod';
+import { string, z } from 'zod';
 
 export async function userRoutes(server: FastifyInstance) {
   server.post('/register', async (request) => {
@@ -49,5 +49,34 @@ export async function userRoutes(server: FastifyInstance) {
     });
 
     return user;
+  });
+
+  server.patch('/edit-user/:id', async (request) => {
+    const paramsSchema = z.object({
+      id: string().uuid(),
+    });
+
+    const { id } = paramsSchema.parse(request.params);
+
+    const bodySchema = z.object({
+      name: z.string().optional(),
+      email: z.string().optional(),
+      senha: z.string().optional(),
+    });
+
+    const { name, email, senha } = bodySchema.parse(request.body);
+
+    const editUser = await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        name,
+        email,
+        senha,
+      },
+    });
+
+    return editUser;
   });
 }
