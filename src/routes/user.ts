@@ -2,16 +2,21 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma';
 import { string, z } from 'zod';
 
-export async function userRoutes(server: FastifyInstance) {
-  server.post('/register', async (request) => {
+export async function userRoutes(app: FastifyInstance) {
+  app.post('/register', async (request, reply) => {
     const bodySchema = z.object({
       name: z.string(),
-      email: z.string(),
-      senha: z.string(),
+      email: z.string().email({ message: 'email inválido' }),
+      senha: z
+        .string()
+        .min(8, { message: 'A senha deve ter no mínimo 8 caracteres' })
+        .regex(/((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+          message:
+            'A senha deve incluir pelo menos uma letra maiúscula um dígito e caracter especial',
+        }),
     });
 
     const { name, email, senha } = bodySchema.parse(request.body);
-    console.log('cheguei', name, email, senha);
 
     const createUser = await prisma.user.create({
       data: {
@@ -21,7 +26,7 @@ export async function userRoutes(server: FastifyInstance) {
       },
     });
 
-    const token = server.jwt.sign(
+    const token = app.jwt.sign(
       { name: createUser.name },
       {
         expiresIn: '30 days',
@@ -32,7 +37,7 @@ export async function userRoutes(server: FastifyInstance) {
     return createUser;
   });
 
-  server.get('/user/:id', async (request) => {
+  app.get('/user/:id', async (request) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -51,7 +56,7 @@ export async function userRoutes(server: FastifyInstance) {
     return user;
   });
 
-  server.patch('/edit-user/:id', async (request) => {
+  app.patch('/edit-user/:id', async (request) => {
     const paramsSchema = z.object({
       id: string().uuid(),
     });
@@ -78,5 +83,21 @@ export async function userRoutes(server: FastifyInstance) {
     });
 
     return editUser;
+  });
+
+  app.delete('/delete-user/:id', async (request) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    });
+
+    const { id } = paramsSchema.parse(request.params);
+
+    const deleteUser = await prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return deleteUser;
   });
 }

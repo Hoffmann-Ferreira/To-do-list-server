@@ -2,8 +2,8 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma';
 import { string, z } from 'zod';
 
-export async function tasksRoutes(server: FastifyInstance) {
-  server.post('/creating-task', async (request) => {
+export async function tasksRoutes(app: FastifyInstance) {
+  app.post('/creating-task', async (request) => {
     const bodySchema = z.object({
       name: z.string(),
       date: z.string(),
@@ -24,7 +24,7 @@ export async function tasksRoutes(server: FastifyInstance) {
     return createdTask;
   });
 
-  server.post('/creat-sub-task/:id', async (request) => {
+  app.post('/creat-sub-task/:id', async (request) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -52,7 +52,7 @@ export async function tasksRoutes(server: FastifyInstance) {
     return creatSubTask;
   });
 
-  server.patch('/edit-task/:id', async (request) => {
+  app.patch('/edit-task/:id', async (request) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -86,7 +86,7 @@ export async function tasksRoutes(server: FastifyInstance) {
     return editTask;
   });
 
-  server.get('/find-all-tasks/:id', async (request) => {
+  app.get('/find-all-tasks/:id', async (request) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -102,7 +102,7 @@ export async function tasksRoutes(server: FastifyInstance) {
     return tasks;
   });
 
-  server.get('/task/:id', async (request) => {
+  app.get('/task/:id', async (request) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
@@ -119,7 +119,7 @@ export async function tasksRoutes(server: FastifyInstance) {
     return tasks;
   });
 
-  server.delete('/delete-task/:id', async (request) => {
+  app.delete('/delete-task/:id', async (request) => {
     const paramsSchema = z.object({
       id: string().uuid(),
     });
