@@ -1,8 +1,15 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyError, FastifyInstance } from 'fastify';
 import { prisma } from '../lib/prisma';
 import { string, z } from 'zod';
 
 export async function tasksRoutes(app: FastifyInstance) {
+  app.setErrorHandler(function (error: FastifyError, request, reply) {
+    console.error('Ocorreu um erro:', error.message);
+    const menssageError = error.message;
+
+    reply.status(400).send({ menssageError });
+  });
+
   app.post('/creating-task', async (request) => {
     const bodySchema = z.object({
       name: z.string(),

@@ -8,10 +8,10 @@ datasource db {
 }
 
 model User {
-  id        String @id @unique @default(uuid())
+  id        String  @id @unique @default(uuid())
   googleId  String? @unique
   name      String
-  email     String
+  email     String  @unique
   senha     String
   avatarUrl String?
 
@@ -19,12 +19,12 @@ model User {
 }
 
 model Task {
-  id        String   @id @unique @default(uuid())
-  concluded Boolean  @default(false)
-  name      String? 
+  id        String    @id @unique @default(uuid())
+  concluded Boolean   @default(false)
+  name      String?
   date      DateTime?
   task      String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   userId    String
   taskId    String?
 

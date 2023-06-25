@@ -1,8 +1,15 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyError } from 'fastify';
 import { prisma } from '../lib/prisma';
 import { string, z } from 'zod';
 
 export async function userRoutes(app: FastifyInstance) {
+  app.setErrorHandler(function (error: FastifyError, request, reply) {
+    console.error('Ocorreu um erro:', error.message);
+    const menssageError = error.message;
+
+    reply.status(400).send({ menssageError });
+  });
+
   app.post('/register', async (request, reply) => {
     const bodySchema = z.object({
       name: z.string(),
@@ -18,6 +25,15 @@ export async function userRoutes(app: FastifyInstance) {
 
     const { name, email, senha } = bodySchema.parse(request.body);
 
+    const verifyEmail = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (verifyEmail) {
+      throw reply.status(400).send('email já cadastrado');
+    }
     const createUser = await prisma.user.create({
       data: {
         name,
@@ -56,7 +72,7 @@ export async function userRoutes(app: FastifyInstance) {
     return user;
   });
 
-  app.patch('/edit-user/:id', async (request) => {
+  app.patch('/edit-user/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: string().uuid(),
     });
@@ -65,11 +81,30 @@ export async function userRoutes(app: FastifyInstance) {
 
     const bodySchema = z.object({
       name: z.string().optional(),
-      email: z.string().optional(),
-      senha: z.string().optional(),
+      email: z.string().email({ message: 'email inválido' }).optional(),
+      senha: z
+        .string()
+        .min(8, { message: 'A senha deve ter no mínimo 8 caracteres' })
+        .regex(/((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+          message:
+            'A senha deve incluir pelo menos uma letra maiúscula um dígito e caracter especial',
+        })
+        .optional(),
     });
 
     const { name, email, senha } = bodySchema.parse(request.body);
+
+    if (email != undefined) {
+      const verifyEmail = await prisma.user.findFirst({
+        where: {
+          email: email,
+        },
+      });
+
+      if (verifyEmail?.email === email) {
+        throw reply.status(400).send('email já cadastrado');
+      }
+    }
 
     const editUser = await prisma.user.update({
       where: {
