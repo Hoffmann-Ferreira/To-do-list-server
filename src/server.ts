@@ -1,16 +1,22 @@
 import fastify from 'fastify';
 import { tasksRoutes } from './routes/tasks';
 import { userRoutes } from './routes/user';
-import jwt from '@fastify/jwt';
+import fastifyJwt, { FastifyJWTOptions } from '@fastify/jwt';
+import dotenv from 'dotenv';
+import { authRoutes } from './routes/auth';
+
+dotenv.config();
 
 const server = fastify();
+const secretKey = process.env.SECRET_KEY;
 
-server.register(jwt, {
-  secret: 'To-to-list',
-});
+server.register(fastifyJwt, {
+  secret: secretKey,
+} as FastifyJWTOptions);
 
-server.register(tasksRoutes);
+server.register(authRoutes);
 server.register(userRoutes);
+server.register(tasksRoutes);
 
 server.listen({ port: 3333 }, (err) => {
   if (err) {

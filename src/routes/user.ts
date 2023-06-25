@@ -3,6 +3,14 @@ import { prisma } from '../lib/prisma';
 import { string, z } from 'zod';
 
 export async function userRoutes(app: FastifyInstance) {
+  app.addHook('preHandler', async (request, reply) => {
+    try {
+      await request.jwtVerify();
+    } catch (err) {
+      reply.code(401).send({ error: 'Não autorizado' });
+    }
+  });
+
   app.setErrorHandler(function (error: FastifyError, request, reply) {
     console.error('Ocorreu um erro:', error.message);
     const menssageError = error.message;
@@ -41,14 +49,6 @@ export async function userRoutes(app: FastifyInstance) {
         senha,
       },
     });
-
-    const token = app.jwt.sign(
-      { name: createUser.name },
-      {
-        expiresIn: '30 days',
-      }
-    );
-    console.log(token);
 
     return createUser;
   });
