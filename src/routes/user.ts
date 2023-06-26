@@ -18,41 +18,6 @@ export async function userRoutes(app: FastifyInstance) {
     reply.status(400).send({ menssageError });
   });
 
-  app.post('/register', async (request, reply) => {
-    const bodySchema = z.object({
-      name: z.string(),
-      email: z.string().email({ message: 'email inválido' }),
-      senha: z
-        .string()
-        .min(8, { message: 'A senha deve ter no mínimo 8 caracteres' })
-        .regex(/((?=.*\d)(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-          message:
-            'A senha deve incluir pelo menos uma letra maiúscula um dígito e caracter especial',
-        }),
-    });
-
-    const { name, email, senha } = bodySchema.parse(request.body);
-
-    const verifyEmail = await prisma.user.findFirst({
-      where: {
-        email: email,
-      },
-    });
-
-    if (verifyEmail) {
-      throw reply.status(400).send('email já cadastrado');
-    }
-    const createUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        senha,
-      },
-    });
-
-    return createUser;
-  });
-
   app.get('/user/:id', async (request) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
