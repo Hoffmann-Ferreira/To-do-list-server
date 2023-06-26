@@ -6,11 +6,12 @@ export async function tasksRoutes(app: FastifyInstance) {
   app.addHook('preHandler', async (request, reply) => {
     try {
       await request.jwtVerify();
+      return request.user;
     } catch (err) {
       reply.code(401).send({ error: 'Não autorizado' });
     }
   });
-  
+
   app.setErrorHandler(function (error: FastifyError, request, reply) {
     console.error('Ocorreu um erro:', error.message);
     const menssageError = error.message;
@@ -27,12 +28,24 @@ export async function tasksRoutes(app: FastifyInstance) {
 
     const { name, date, task } = bodySchema.parse(request.body);
 
+    const userIdSchema = z.object({
+      email: z.string().email(),
+    });
+
+    const { email } = userIdSchema.parse(request.user);
+
+    const findUserId = await prisma.user.findFirstOrThrow({
+      where: {
+        email: email,
+      },
+    });
+
     const createdTask = await prisma.task.create({
       data: {
         name,
         date,
         task,
-        userId: '3ee7b3d5-e897-44b6-9231-31924b76a0b2',
+        userId: findUserId.id,
       },
     });
 
@@ -54,12 +67,24 @@ export async function tasksRoutes(app: FastifyInstance) {
 
     const { name, date, task } = bodySchema.parse(request.body);
 
+    const userIdSchema = z.object({
+      email: z.string().email(),
+    });
+
+    const { email } = userIdSchema.parse(request.user);
+
+    const findUserId = await prisma.user.findFirstOrThrow({
+      where: {
+        email: email,
+      },
+    });
+
     const creatSubTask = await prisma.task.create({
       data: {
         name,
         date,
         task,
-        userId: '3ee7b3d5-e897-44b6-9231-31924b76a0b2',
+        userId: findUserId.id,
         taskId: id,
       },
     });
@@ -75,23 +100,20 @@ export async function tasksRoutes(app: FastifyInstance) {
     const { id } = paramsSchema.parse(request.params);
 
     const bodySchema = z.object({
+      concluded: z.boolean().optional(),
       name: z.string().optional(),
       date: z.string().optional(),
       task: z.string().optional(),
     });
 
-    const { name, date, task } = bodySchema.parse(request.body);
-
-    // let findTask = await prisma.task.findUniqueOrThrow({
-    //   where: { id,
-    //   },
-    // })
+    const { concluded, name, date, task } = bodySchema.parse(request.body);
 
     const editTask = await prisma.task.update({
       where: {
         id,
       },
       data: {
+        concluded,
         name,
         date,
         task,
