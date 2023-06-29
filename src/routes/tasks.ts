@@ -6,7 +6,6 @@ export async function tasksRoutes(app: FastifyInstance) {
   app.addHook('preHandler', async (request, reply) => {
     try {
       await request.jwtVerify();
-      return request.user;
     } catch (err) {
       reply.code(401).send({ error: 'Não autorizado' });
     }
@@ -123,20 +122,36 @@ export async function tasksRoutes(app: FastifyInstance) {
     return editTask;
   });
 
-  app.get('/find-all-tasks/:id', async (request) => {
+  app.get('/find-all-tasks/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
 
     const { id } = paramsSchema.parse(request.params);
 
-    const tasks = await prisma.task.findMany({
+    const userIdSchema = z.object({
+      email: z.string().email(),
+    });
+
+    const { email } = userIdSchema.parse(request.user);
+
+    const verifyUser = await prisma.user.findUnique({
       where: {
-        userId: id,
+        email: email,
       },
     });
 
-    return tasks;
+    if (verifyUser?.id === id) {
+      const tasks = await prisma.task.findMany({
+        where: {
+          userId: id,
+        },
+      });
+
+      return tasks;
+    } else {
+      reply.code(401).send('Não autorizado!');
+    }
   });
 
   app.get('/task/:id', async (request) => {
