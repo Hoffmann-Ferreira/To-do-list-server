@@ -3,6 +3,29 @@ import { prisma } from '../lib/prisma';
 import { string, z } from 'zod';
 
 export async function userRoutes(app: FastifyInstance) {
+  const verifyUser = async (
+    loggeUser: string | object | Buffer,
+    targetUser: string
+  ) => {
+    const userIdSchema = z.object({
+      email: z.string().email(),
+    });
+
+    const { email } = userIdSchema.parse(loggeUser);
+
+    const verifyUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (targetUser != verifyUser?.id) {
+      return verifyUser?.id;
+    } else {
+      return targetUser;
+    }
+  };
+
   app.addHook('preHandler', async (request, reply) => {
     try {
       await request.jwtVerify();
@@ -18,12 +41,20 @@ export async function userRoutes(app: FastifyInstance) {
     reply.status(400).send({ menssageError });
   });
 
-  app.get('/user/:id', async (request) => {
+  app.get('/user/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
 
     const { id } = paramsSchema.parse(request.params);
+
+    const targetUser = id;
+    const loggeUser = request.user;
+    const check = await verifyUser(loggeUser, targetUser);
+
+    if (id != check) {
+      throw reply.status(401).send('Não autorizado!');
+    }
 
     const user = await prisma.user.findFirstOrThrow({
       where: {
@@ -43,6 +74,14 @@ export async function userRoutes(app: FastifyInstance) {
     });
 
     const { id } = paramsSchema.parse(request.params);
+
+    const targetUser = id;
+    const loggeUser = request.user;
+    const check = await verifyUser(loggeUser, targetUser);
+
+    if (id != check) {
+      throw reply.status(401).send('Não autorizado!');
+    }
 
     const bodySchema = z.object({
       name: z.string().optional(),
@@ -85,12 +124,20 @@ export async function userRoutes(app: FastifyInstance) {
     return editUser;
   });
 
-  app.delete('/delete-user/:id', async (request) => {
+  app.delete('/delete-user/:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     });
 
     const { id } = paramsSchema.parse(request.params);
+
+    const targetUser = id;
+    const loggeUser = request.user;
+    const check = await verifyUser(loggeUser, targetUser);
+
+    if (id != check) {
+      throw reply.status(401).send('Não autorizado!');
+    }
 
     const deleteUser = await prisma.user.delete({
       where: {
