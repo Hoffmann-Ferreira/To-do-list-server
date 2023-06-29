@@ -1,9 +1,10 @@
 import fastify from 'fastify';
-import { tasksRoutes } from './routes/tasks';
-import { userRoutes } from './routes/user';
+import cors from '@fastify/cors';
 import fastifyJwt, { FastifyJWTOptions } from '@fastify/jwt';
 import dotenv from 'dotenv';
 import { authRoutes } from './routes/auth';
+import { tasksRoutes } from './routes/tasks';
+import { userRoutes } from './routes/user';
 
 dotenv.config();
 
@@ -13,6 +14,10 @@ const secretKey = process.env.SECRET_KEY;
 server.register(fastifyJwt, {
   secret: secretKey,
 } as FastifyJWTOptions);
+
+server.register(cors, {
+  origin: true,
+});
 
 server.register(authRoutes);
 server.register(userRoutes);
