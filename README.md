@@ -16,7 +16,7 @@
  <img src="https://media.discordapp.net/attachments/967162864408346697/1117983855534682162/8125e100-61bc-11e9-8d9f-eb01f522f962.png?width=1225&height=612" width="150" alt="Fastifay" />
 <img src="https://media.discordapp.net/attachments/967162864408346697/998699875438960690/prisma.png" width="150" alt="Prisma Logo" />
  <img src="https://media.discordapp.net/attachments/967162864408346697/998718004256845854/pngwing.com.png?width=1088&height=612" width="150" alt="PostgreSQL logo" />
- <img src="https://media.discordapp.net/attachments/967162864408346697/1124158907493908480/1_cNN7z6x6o08QKCdKg6BIvQ.webp?width=467&height=427" width="150" alt="Zod logo" />
+ <img src="https://media.discordapp.net/attachments/967162864408346697/1124158907493908480/1_cNN7z6x6o08QKCdKg6BIvQ.webp?width=467&height=427" width="100" alt="Zod logo" />
 </div>
 
 ### 🔧 Installation
