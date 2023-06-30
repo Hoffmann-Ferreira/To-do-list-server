@@ -47,5 +47,5 @@ $ npm run dev
 
 ## 📞 Contact
 
-- Author - [Andrei Hofffmann Fereira](href="https://wa.me/+5532984179500")
+- Author - <a href="https://wa.me/+5532984179500">Andrei Hoffmann Ferreira</a>
 - Linkedin - [https://www.linkedin.com/in/devhoffmannferreira/](https://www.linkedin.com/in/devhoffmannferreira/)
