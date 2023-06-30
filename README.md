@@ -34,7 +34,6 @@ $  git clone https://github.com/Hoffmann-Ferreira/To-do-list-server.git
 ## Installation
 
 ```bash
-Installation
 npm install
 ```
 
