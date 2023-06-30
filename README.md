@@ -7,7 +7,7 @@
 
 ## 📋 Prerequisites
 
-- **NodeJs**[Node Download](https://nodejs.org/en)
+- **NodeJs** [Node Download](https://nodejs.org/en)
 
 ## 🧰 Stacks
 
@@ -34,7 +34,7 @@ $  git clone https://github.com/Hoffmann-Ferreira/To-do-list-server.git
 ## Installation
 
 ```bash
-Installation must be done folder by folder.
+Installation
 npm install
 ```
 
