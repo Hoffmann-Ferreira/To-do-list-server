@@ -1,4 +1,4 @@
-<h1 align=center>To do list</h1>
+<h1 align=center>To-do list</h1>
 
 ## 🚀 Description
 
